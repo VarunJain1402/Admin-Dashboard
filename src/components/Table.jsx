@@ -9,7 +9,6 @@ import DeleteSharpIcon from '@mui/icons-material/DeleteSharp'
 import UserActions from './UserActions'
 import * as FileSaver from 'file-saver'
 import * as XLSX from 'xlsx'
-import ExportToExcel from './ExportToExcel'
 
 function Table () {
   const [rowId, setRowId] = useState(null)
