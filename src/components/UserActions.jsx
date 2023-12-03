@@ -3,14 +3,16 @@ import { Box, Icon } from '@mui/material'
 import React from 'react'
 
 const UserActions = ({params , rowId ,setRowId}) => {
-    const handleDeleteRow = ()=>{
-        console.log('delete')
-        console.log(rowId)
-    }
+// console.log(params)
+    // const handleDeleteRow = (rowId)=>{
+    //     console.log('delete')
+    //     console.log(rowId)
+    // }
   return (
     <Box>
       <Icon>
-        <DeleteForever color='error' onClick ={handleDeleteRow} />
+        {/* <DeleteForever color='error' onClick ={handleDeleteRow} /> */}
+        <DeleteForever color='error' />
       </Icon>
     </Box>
   )

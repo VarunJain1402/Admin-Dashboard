@@ -14,7 +14,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
 const drawerWidth = 240;
-const navItems = ['Home', 'About', 'Contact'];
 
 function DrawerAppBar(props) {
   const { window } = props;
@@ -30,15 +29,7 @@ function DrawerAppBar(props) {
         MUI
       </Typography>
       <Divider />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={item} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      
     </Box>
   );
 
@@ -57,11 +48,6 @@ function DrawerAppBar(props) {
             Dashboard
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map((item) => (
-              <Button key={item} sx={{ color: '#fff' }}>
-                {item}
-              </Button>
-            ))}
           </Box>
         </Toolbar>
       </AppBar>
