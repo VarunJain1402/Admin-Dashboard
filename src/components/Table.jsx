@@ -1,12 +1,12 @@
-import React,{ useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 import axios from 'axios'
 import Button from '@mui/material/Button'
 import DeleteIcon from '@mui/icons-material/Delete'
-import Icon from '@mui/material/Icon'
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload'
-import DeleteSharpIcon from '@mui/icons-material/DeleteSharp'
-import UserActions from './UserActions'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import * as FileSaver from 'file-saver'
 import * as XLSX from 'xlsx'
 
@@ -14,41 +14,42 @@ function Table () {
   const [rowId, setRowId] = useState(null)
   const [info, setInfo] = useState([])
   const [download, setDownload] = useState(false)
+  const [deletedRows, setDeletedRows] = useState([])
   const fileName = 'Users Data'
   const columns = [
-    { field: 'id', headerName: 'ID', width: 200, sortable: false },
+    { field: 'id', headerName: 'ID', sortable: false, flex: 1 },
     {
-      field: 'Name',
+      field: 'name',
       headerName: 'Name',
-      width: 200,
+
       sortable: false,
-      editable: true
+      editable: true,
+      flex: 1
     },
     {
-      field: 'Email',
+      field: 'email',
       headerName: 'Email',
-      width: 200,
+
       sortable: false,
-      editable: true
+      editable: true,
+      flex: 1
     },
     {
-      field: 'Role',
+      field: 'role',
       headerName: 'Role',
       description: 'This column has a value getter and is not sortable.',
       sortable: false,
-      width: 200
-      // valueGetter: params =>
-      //   `${params.row.firstName || ''} ${params.row.lastName || ''}`
-    },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      type: 'actions',
-      width: 200,
-      renderCell: params => <UserActions {...{ params, rowId, setRowId }} />,
-      sortable: false,
-      editable: false
+      flex: 1
     }
+    //     {
+    //       field: 'actions',
+    //       headerName: 'Actions',
+    //       type: 'actions',
+    //       width: 200,
+    //       renderCell: params => <UserActions {...{ params, rowId, setRowId }} />,
+    //       sortable: false,
+    //       editable: false
+    //     }
   ]
   useEffect(() => {
     axios
@@ -57,7 +58,7 @@ function Table () {
       )
       .then(response => {
         setInfo(response.data)
-        console.log(response.data)
+        // console.log(response.data)
 
         // reshaping the array
         const customHeadings = response.data.map(item => ({
@@ -69,9 +70,11 @@ function Table () {
       })
   }, [])
 
-  const handleDeleteAll = () => {
-    console.log(`Delete All btn is clicked`)
-    return info.map(() => setInfo([]))
+  const handleDelete = () => {
+    console.log(
+      info.filter(r => deletedRows.filter(sr => sr.id === r.id).length < 1)
+    )
+    setInfo(info.filter(row => !deletedRows.includes(row.id)))
   }
   const rows = info.map(info => {
     return {
@@ -82,31 +85,25 @@ function Table () {
     }
   })
 
-  const [deletedRows, setDeletedRows] = useState([])
 
   const handleRowSelection = e => {
-    console.log(`Selected row: ${e}`)
-    setDeletedRows([
-      ...deletedRows,
-      ...rows.filter(r => {
-        // console.log(`${r.id}`)
-        return r.id === e
-      })
-    ])
+    console.log(typeof e)
+    console.log(e)
+    console.log(...info.filter(r => r.id === e))
+    setDeletedRows(e)
   }
-
   const handleDownload = () => {
     if (info.length > 0) {
-      console.log(`Clicked on Download Btn`)
-    } else {
-      console.log('No item present to download')
-    }
-    {
-      setDownload(!download)
-      console.log(download)
-      if (download && info.length > 0) {
-        function exportToCSV(apiData, fileName){
-          const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+      //   console.log(`Clicked on Download Btn`)
+
+      if (!download) {
+        setDownload(true)
+        // console.log(download)
+
+        // Trigger the download logic
+        function exportToCSV (apiData, fileName) {
+          const fileType =
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
           const fileExtension = '.xlsx'
           const ws = XLSX.utils.json_to_sheet(apiData)
           const wb = { Sheets: { data: ws }, SheetNames: ['data'] }
@@ -117,34 +114,54 @@ function Table () {
           const data = new Blob([excelBuffer], { type: fileType })
           FileSaver.saveAs(data, fileName + fileExtension)
         }
-        const apiData=info
-        exportToCSV( apiData , fileName )
+
+        const apiData = info
+        exportToCSV(apiData, fileName)
+        setDownload(false)
       }
+    } else {
+      //   console.log('No item present to download')
     }
   }
   return (
     <div style={{ width: '100%', marginTop: '5%' }}>
-      <div style={{ display: 'flex', justifyContent: 'end' }}>
-        <Button
-          variant='outlined'
-          endIcon={<CloudDownloadIcon />}
-          color='error'
-          style={{ margin: '1%' }}
-          onClick={handleDownload}
-        >
-          Download
-        </Button>
-        <Button
-          variant='contained'
-          endIcon={<DeleteIcon />}
-          style={{ margin: '1%' }}
-          onClick={handleDeleteAll}
-        >
-          Delete All
-        </Button>
-      </div>
+       
+          <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Typography variant='h6' align='center'>
+                  Double click on any element to edit the cell data
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography variant='h6' align='center' >
+                  To search data click on any column header
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  variant='outlined'
+                  endIcon={<CloudDownloadIcon />}
+                  style={{ margin: '1%' }}
+                  onClick={handleDownload}
+                >
+                  Download
+                </Button>
+                <Button
+                  variant='contained'
+                  endIcon={<DeleteIcon />}
+                  style={{ margin: '1%' }}
+                  onClick={handleDelete}
+                  color='error'
+                >
+                  Delete
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+    
       <DataGrid
-        rows={rows}
+        rows={info}
         columns={columns}
         initialState={{
           pagination: {
@@ -153,7 +170,6 @@ function Table () {
         }}
         pageSizeOptions={[10]}
         checkboxSelection
-        disableRowSelectionOnClick
         onRowSelectionModelChange={handleRowSelection}
       />
     </div>
