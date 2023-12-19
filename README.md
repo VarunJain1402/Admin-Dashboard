@@ -1,4 +1,4 @@
-<u># Description</ul>
+# Description
 A React project bootstrapped with Create React App, featuring a user information table built with the React Material-UI library. The table fetches data from a third-party API, presenting user details in a tabular format.
 # Key Features
 ### Interactive Table:
